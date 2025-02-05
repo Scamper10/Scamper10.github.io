@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <title>Towers of Hanoi</title>
+
+    <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+
+<body>
+    <h1>Towers of Hanoi</h1>
+    <div id="canvHolder"></div>
+    <div id="buttonHolder">
+
+        <div class="btn-container">
+            <button onclick="reset(false)">Reset</button>
+            <button onclick="reset(true)">Random</button>
+        </div>
+
+        <div class="btn-container">
+            <button id="solveBtn">Solve</button>
+            <button id="stepBtn">Step</button>
+        </div>
+
+        <div class="btn-container">
+            <label for="ringInp" class="label">Rings:</label>
+            <input type="number" id="ringInp" min="1" max="64" value="6" step="1" />
+            <button id="ringSubm">Apply</button>
+        </div>
+
+        <div class="btn-container" id="moveSpdHolder">
+            <label for="moveSpdInp" class="label">Solve Speed:</label>
+            <input type="number" id="moveSpdInp" max="30" value="3" />
+            <span title="moves per second, approx." class="label">(moves/s)</span>
+        </div>
+
+    </div>
+    <p id="meTxt">Jay Cardwell</p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.js"></script>
+    <script src='script.js'></script>
+</body>
+
+</html>
