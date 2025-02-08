@@ -91,6 +91,7 @@ function setup() {
 function draw() {
 	if (customizeDiff) {
 		customizeDiffDraw()
+		touchUpdate()
 	} else {
 		background(36) // webpage bg is color(18)
 		touchUpdate()
@@ -238,8 +239,8 @@ function touchStarted() {
 		touchInp = "double"
 		touchTime = null
 		// handle double
-		gameCon.abs()
-		cellClick(mouseX - gameCon.absX, mouseY - gameCon.absY)
+		mouseButton = RIGHT
+		mousePressed()
 	} else {
 		touchInp = "single"
 		touchTime = -touchModifyTime
@@ -267,11 +268,9 @@ function touchUpdate() {
 			touchInp = "single"
 			touchTime = null
 			// handle single
-			if (gameCon.inBounds(mouseX, mouseY)) {
-				gameCon.abs()
-				cellClick(mouseX - gameCon.absX, mouseY - gameCon.absY)
-				return
-			}
+			mouseButton = LEFT
+			mousePressed()
+			return
 		}
 	}
 	if (touchTime !== null) {
@@ -404,6 +403,7 @@ function customDiffSelect() {
 		canvas, 0, 0, width, height,
 		0, 0, width, height
 	)
+	// customizeBg = loadImage("favicon.ico") //#db
 
 	uiClickables = []
 
@@ -490,6 +490,7 @@ String.prototype.toCamelCase = function () {
 	return str
 }
 
+//#db
 console.showMap = {
 	risks: (page = 1) => {
 		if (digged == 0) {

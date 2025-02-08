@@ -9,9 +9,13 @@ body {
     overflow: hidden;
 }
 
-h1 {
+.center-container {
     text-align: center;
+}
+
+h1 {
     margin: 1vh;
+    display: inline-block;
 }
 
 #canvHolder {

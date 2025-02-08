@@ -42,6 +42,8 @@ function setup() {
 }
 
 function windowResized() {
+	const bodyW = document.body.offsetWidth
+
 	// get heights of other elements
 	const eles = document.querySelectorAll(
 		"body > *:not(#canvHolder):not(canvas):not(#meTxt)"
@@ -51,7 +53,7 @@ function windowResized() {
 		otherHeightSum += ele.offsetHeight
 	}
 
-	const w = windowWidth
+	const w = bodyW - 10 // body margin
 	const h = windowHeight - otherHeightSum
 	const minH = 0
 	const side = min(w, max(minH, h))
@@ -62,16 +64,14 @@ function windowResized() {
 
 	SCALER = side / 1000
 
-	// get margin
-	//#db
-	let margin = 1
-
-	if (margin < 100) {
-		document.getElementById("meTxt").style.top = "-0.5em"
-		document.getElementById("meTxt").style.bottom = "unset"
+	const meTxtW = document.getElementById("meTxt").offsetWidth
+	const hW = document.getElementById("header").offsetWidth
+	if ((bodyW - 40 - hW) / 2 < meTxtW) {
+		meTxt.style.top = "unset"
+		meTxt.style.bottom = "-0.5em"
 	} else {
-		document.getElementById("meTxt").style.top = "unset"
-		document.getElementById("meTxt").style.bottom = "-0.5em"
+		meTxt.style.top = "-0.5em"
+		meTxt.style.bottom = "unset"
 	}
 }
 
@@ -165,6 +165,10 @@ function mousePressed() {
 		}
 	}
 }
+
+function touchStarted() {
+	mousePressed()
+}
 //#endregion
 
 //#region   Tower manip
@@ -223,6 +227,7 @@ function reset(randomize) {
 
 //#region   Solving
 function startAutoSolve() {
+	selected = null
 	solveBtnState(1)
 	autoSolveStep()
 }
