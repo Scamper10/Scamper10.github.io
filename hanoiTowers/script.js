@@ -11,20 +11,67 @@ const TOWER_SEP = 300
 	, RING_MAX = 300
 	, BAD_INP_COL = "#ffc3c3"
 	, FRAMERATE = 60
+	, TIME_COLORS = {
+		// pre-solve
+		0: [0, 0, 40],
+
+		// mid-solve
+		1: {
+			// random?
+			false: {
+				// solveUsed?
+				false: [0, 0, 0],
+				true: [0, 100, 40]
+			},
+			true: {
+				// solveUsed?
+				false: [240, 100, 40],
+				true: [280, 100, 40]
+			}
+		},
+
+		// post-solve
+		2: {
+			// random?
+			false: {
+				// solveUsed?
+				false: [120, 100, 60],
+				true: [0, 100, 60]
+			},
+			true: {
+				// solveUsed?
+				false: [240, 100, 80],
+				true: [280, 100, 80]
+			}
+		}
+	}
 
 
 // program vars
 let ringNum = 6
-	, towers
-	, selected = null
 	, shakeTimer = -1
-	, solveTimer = -1
-	, solveStack = []
-	, lastMode = false
+	, lastMode = false // randomize: bool
+	, timeTO = null
+	, towers
+	, selected
+	, solveTimer
+	, solveStack
+	, score
+	, time
+	, solveUsed
+
+	, activeState
+	/*
+	0: before solve
+	1: solving
+	3: solved
+	*/
+
 	, RING_SPACE
 	, RING_DELTA
 	, RING_H
 	, RING_SEP
+	, R_TXT_SIZE
 	, SOLVE_DELAY
 
 //#region   Main
@@ -34,7 +81,6 @@ function setup() {
 	windowResized()
 
 	rectMode(CENTER)
-	textAlign(CENTER, CENTER)
 	colorMode(HSB)
 
 	applySpd()
@@ -81,6 +127,9 @@ function draw() {
 	scale(SCALER)
 	background(0, 0, 78)
 
+	// towers & rings
+	textSize(R_TXT_SIZE)
+	textAlign(CENTER, CENTER)
 	for (let t = 0; t < towers.length; t++) {
 		// draw towers
 		fill(0)
@@ -118,6 +167,19 @@ function draw() {
 	// draw base
 	fill(0)
 	rect(500, 850, 800, 10, 10)
+
+	// timer
+	textSize(48)
+	textAlign(RIGHT, TOP)
+	fill(getTimeCol())
+	const txt = time
+		.map(ele => ele.toString().padStart(2, "0")) // fixed lengths
+		.join(":")
+	text(txt, 980, 20)
+
+	// move count
+	textAlign(LEFT, TOP)
+	text(score, 20, 20)
 }
 
 function tick() {
@@ -189,16 +251,31 @@ function clickT(t) {
 }
 
 function moveDisc(src, dest) {
+	// pre-move checks
 	if (isSolved()) {
 		unsolve()
+	} else if (activeState === 0) {
+		activeState = 1
+		startTimer()
 	}
+
+	// move
 	towers[dest].push(towers[src].pop())
+	score++
+
+	// post-move checks
 	if (isSolved()) {
 		finishSolve()
+	} else if (!lastMode && isReset()) {
+		activeState = 0
+		score = 0
+		resetTimer()
 	}
 }
 
 function reset(randomize) {
+	applyNum()
+
 	lastMode = randomize
 
 	towers = [
@@ -212,16 +289,54 @@ function reset(randomize) {
 	}
 	selected = null
 
+	activeState = 0
+	score = 0
+	resetTimer()
+
 	solveStack = [];
 	solveTimer = -1
+	solveUsed = false
 	solveBtnState(0)
 
 	RING_DELTA = (RING_MAX - RING_MIN) / ringNum;
 	RING_SPACE = constrain(380 / ringNum, 10, 60)
 	RING_H = 5 / 6 * RING_SPACE
 	RING_SEP = 1 / 6 * RING_SPACE
+	R_TXT_SIZE = 0.8 * RING_H
+}
+//#endregion
 
-	textSize(0.8 * RING_H)
+//#region	Timing
+function startTimer() {
+	timeTO = setInterval(incTimer, 1000);
+}
+
+function incTimer() {
+	time[2]++
+	for (let i = 2; i >= 1; i--) {
+		if (time[i] === 60) {
+			time[i] = 0
+			time[i - 1]++
+		}
+	}
+}
+
+function stopTimer() {
+	clearInterval(timeTO)
+	timeTO = null
+}
+
+function resetTimer() {
+	stopTimer()
+	time = Array(3).fill(0)
+}
+
+
+function getTimeCol() {
+	if (activeState === 0) {
+		return color(TIME_COLORS[0])
+	}
+	return color(TIME_COLORS[activeState][lastMode][solveUsed])
 }
 //#endregion
 
@@ -235,7 +350,11 @@ function autoSolveStep() {
 	solveTimer = SOLVE_DELAY - 1
 	solveStep()
 }
+
 function solveStep() {
+	if (!solveUsed) {
+		solveUsed = true
+	}
 	if (solveStack.length === 0) {
 
 		// if not solved, but stack empty
@@ -302,8 +421,11 @@ class Instr {
 	}
 }
 
+
 function finishSolve() {
 	solveTimer = -1
+	stopTimer()
+	activeState = 2
 	solveStack = []
 	solveBtnState(3)
 }
@@ -319,19 +441,22 @@ function resumeSolve() {
 	solveBtnState(1)
 }
 
+function isReset() {
+	return towers[0].length === ringNum
+}
 function isSolved() {
 	return towers[2].length === ringNum
 }
 //#endregion
 
-//#region   Solve btns
+//#region   Inputs
 
 stepBtn.onclick = function () {
 	selected = null
 	solveStep()
 }
 
-ringSubmBtn.onclick = applyNum
+ringSubmBtn.onclick = () => reset(lastMode)
 function applyNum() {
 	let inp = document.getElementById("ringInp")
 		, n = parseInt(inp.value, 10)
@@ -350,7 +475,6 @@ function applyNum() {
 	}
 
 	ringNum = n
-	reset(lastMode)
 }
 
 moveSpdInp.max = FRAMERATE

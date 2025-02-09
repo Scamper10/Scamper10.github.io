@@ -397,13 +397,13 @@ function win() {
 function customDiffSelect() {
 	customizeDiff = true
 
+	//#TODO doesn't work on mobile
 	// screenshot for background
 	customizeBg = createGraphics(width, height)
 	customizeBg.copy(
 		canvas, 0, 0, width, height,
 		0, 0, width, height
 	)
-	// customizeBg = loadImage("favicon.ico") //#db
 
 	uiClickables = []
 
