@@ -198,7 +198,7 @@ function keyPressed() {
 	const active = document.activeElement
 	if (active.tagName === "INPUT") {
 		if (active.id === "ringInp" && keyCode === ENTER) {
-			applyNum()
+			ringSubmBtn.onclick()
 		}
 		return
 	}
