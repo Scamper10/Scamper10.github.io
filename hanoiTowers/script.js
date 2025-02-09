@@ -45,6 +45,7 @@ const TOWER_SEP = 300
 			}
 		}
 	}
+	, PERFECT_SCORE_COL = [35, 80, 100]
 
 
 // program vars
@@ -132,6 +133,7 @@ function draw() {
 	textAlign(CENTER, CENTER)
 	for (let t = 0; t < towers.length; t++) {
 		// draw towers
+		noStroke()
 		fill(0)
 		let tX = 500 + TOWER_SEP * (t - 1)
 		rect(tX, 650, 50, 400, 10)
@@ -157,8 +159,10 @@ function draw() {
 			}
 
 			// draw rings
+			stroke(0)
 			fill(lerp(0, 280, p), 100, 100)
 			rect(dX, dY, w, RING_H)
+			noStroke()
 			fill(0)
 			text(dSize, dX, dY + 0.05 * RING_H)
 		}
@@ -179,6 +183,11 @@ function draw() {
 
 	// move count
 	textAlign(LEFT, TOP)
+	textSize(49)
+	if (activeState === 2 && !lastMode && score === 2 ** ringNum - 1) {
+		fill(PERFECT_SCORE_COL)
+		stroke(0, 0, 100)
+	}
 	text(score, 20, 20)
 }
 
@@ -261,7 +270,9 @@ function moveDisc(src, dest) {
 
 	// move
 	towers[dest].push(towers[src].pop())
-	score++
+	if (activeState !== 2) {
+		score++
+	}
 
 	// post-move checks
 	if (isSolved()) {
