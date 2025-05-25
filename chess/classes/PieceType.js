@@ -1,7 +1,11 @@
 class PieceType {
 	static all = {}
 
-	constructor({ identifier, getTargets = null, draw }) {
+	constructor({
+		identifier,
+		getTargets = null,
+		draw
+	}) {
 		if (PieceType.all[identifier] !== undefined) throw Error("PieceType identifiers must be unique")
 
 		this.identifier = identifier

@@ -4,7 +4,7 @@ class Board {
 	constructor(data, knownKingsPos = null) {
 		this.#data = data
 
-		for(const {value: {i, j}} of traverse8by8()) {
+		for(const {i, j} of traverse8by8()) {
 			if(data[i][j] === null) continue
 			if (!(data[i][j] instanceof Piece)) this.#convertFromChars()
 			break
@@ -18,7 +18,7 @@ class Board {
 	}
 
 	#convertFromChars() {
-		for(const {value: {i, j}} of traverse8by8())
+		for(const {i, j} of traverse8by8())
 			this.#data[i][j] = this.#createPiece(this.#data[i][j])
 	}
 	#createPiece(char) {
@@ -33,9 +33,9 @@ class Board {
 	}
 
 	#findKings() {
-		let toFind = [0, 1]
+		let toFind = [0, 1] // list players still not found
 
-		for(const {value: {i, j}} of traverse8by8()) {
+		for(const {i, j} of traverse8by8()) {
 			const lookingAt = this.at(i, j)
 			if (lookingAt === null || lookingAt.identifier !== "k") continue
 
@@ -76,6 +76,9 @@ class Board {
 		return new Board(newArr, { ...this.#kingsPos })
 	}
 
+	/**
+	 * @returns {Number[]} [row, col]
+	 */
 	getKingPos(player) {
 		return this.#kingsPos[player]
 	}

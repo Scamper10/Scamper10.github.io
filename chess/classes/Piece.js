@@ -12,8 +12,8 @@ class Piece {
 		this.#info.draw(x, y, this.#owner)
 	}
 
-	getTargets(row, col) {
-		return this.#info.getTargets(this.#board, row, col, this.#owner)
+	getTargets(row, col, searchingCheck = false) {
+		return this.#info.getTargets(this.#board, row, col, this.#owner, searchingCheck)
 	}
 
 	get owner() {return this.#owner}
