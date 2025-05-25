@@ -1,6 +1,5 @@
 //	Forsyth-Edwards Notation
-// const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0"
-const START_FEN = "r3k2r/pppp1ppp/8/4pP3/8/8/PPPPP1PP/R3K1NR w Qkq e6 0 0"
+const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0"
 
 
 //#region	PIECE DEFINITIONS
