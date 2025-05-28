@@ -29,7 +29,7 @@ class Board {
 		const lowerChar = char.toLowerCase()
 			, isBlack = char === lowerChar
 
-		return new Piece(this, PieceType.all[lowerChar], +isBlack)
+		return new Piece(this, PieceType.getId(lowerChar), +isBlack)
 	}
 
 	#findKings() {

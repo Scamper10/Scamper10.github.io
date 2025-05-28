@@ -4,11 +4,17 @@ const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0"
 
 
 //#region 	MAIN (p5)
+function preload() {
+	imgs = new ImageManager()
+	for(const type of PieceType.all) type.loadRequiredImages?.(imgs)
+}
+
 function setup() {
 	canvas = createCanvas(0, 0).elt
 	windowResized()
 
 	ellipseMode(CENTER)
+	imageMode(CENTER)
 	noLoop()
 
 	let boardArr // for block scope
@@ -160,13 +166,13 @@ function calcAllTargets() {
 		let moves = lookingAt.getTargets(i, j)
 
 		// remove moves that end turn in check
-		for (let moveI = moves.length - 1; moveI >= 0; moveI--) {
-			let move = moves[moveI]
-			,	parallelUniverse = board.copy()
-			parallelUniverse.move(i, j, move.row, move.col)
+		// for (let moveI = moves.length - 1; moveI >= 0; moveI--) {
+		// 	let move = moves[moveI]
+		// 	,	parallelUniverse = board.copy()
+		// 	parallelUniverse.move(i, j, move.row, move.col)
 
-			if(isChecked(parallelUniverse, activePlayer)) moves.splice(moveI, 1)
-		}
+		// 	if(isChecked(parallelUniverse, activePlayer)) moves.splice(moveI, 1)
+		// }
 
 		targets[String(i) + j] = moves
 		targets.count += moves.length
@@ -388,7 +394,7 @@ function parseChar(char, destBoard, row, col) {
 	if (isNaN(num)) {
 		// (char) is a letter
 		const lowerChar = char.toLowerCase()
-		if (!Object.keys(PieceType.all).includes(lowerChar)) {
+		if (![...PieceType.ids].includes(lowerChar)) {
 			throw invalid()
 		}
 
@@ -458,5 +464,21 @@ Object.defineProperty(Array.prototype, "remove", {
 	}
 })
 
+Object.defineProperty(String.prototype, "indexOfRegex", {
+	value: function(regex) {
+		return this.match(regex)?.index ?? -1
+	}
+})
 
-console.log("Script Loaded!");
+Object.defineProperty(String.prototype, "lastIndexOfRegex", {
+	value: function(regex) {
+		let index
+		for(index = this.length-1; index > -1; index--) {
+			if(this[index].match(regex) !== null) break
+		}
+		return index
+	}
+})
+
+
+console.log("Chess: Script Loaded!");

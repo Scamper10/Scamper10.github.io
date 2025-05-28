@@ -1,6 +1,5 @@
 new PieceType({ // r
 	identifier: "r"
-  , draw: (x, y, owner) => text(owner ? "r" : "R", x, y)
   , getTargets: (board, row, col, owner) => {
 		let moves = []
 		,	moveAppend = {}
@@ -47,10 +46,12 @@ new PieceType({ // r
 
 		return moves
 	}
+  , draw: PieceType.AUTO
+  , loadRequiredImages: PieceType.AUTO
 })
 new PieceType({ // n
-	identifier: "n",
-	getTargets: (board, row, col, owner) => {
+	identifier: "n"
+  , getTargets: (board, row, col, owner) => {
 		let moves = []
 		for (const reverse of [false, true]) {
 			const square = reverse ? [col, row] : [row, col]
@@ -81,12 +82,13 @@ new PieceType({ // n
 			}
 		}
 		return moves
-	},
-	draw: (x, y, owner) => text(owner ? "n" : "N", x, y)
+	}
+  , draw: PieceType.AUTO
+  , loadRequiredImages: PieceType.AUTO
 })
 new PieceType({ // b
-	identifier: "b",
-	getTargets: (board, row, col, owner) => {
+	identifier: "b"
+  , getTargets: (board, row, col, owner) => {
 		let moves = []
 		for (let dir = 0; dir < 4; dir++) {
 			// express dir in binary
@@ -121,17 +123,19 @@ new PieceType({ // b
 			}
 		}
 		return moves
-	},
-	draw: (x, y, owner) => text(owner ? "b" : "B", x, y)
+	}
+  , draw: PieceType.AUTO
+  , loadRequiredImages: PieceType.AUTO
 })
 new FusionPieceType({ // q
-	identifier: "q",
-	componentIdentifiers: ["r", "b"],
-	draw: (x, y, owner) => text(owner ? "q" : "Q", x, y)
+	identifier: "q"
+  , componentIdentifiers: ["r", "b"]
+  , draw: PieceType.AUTO
+  , loadRequiredImages: PieceType.AUTO
 })
 new PieceType({ // k
-	identifier: "k",
-	getTargets: (board, row, col, owner, searchingCheck) => {
+	identifier: "k"
+  , getTargets: (board, row, col, owner, searchingCheck) => {
 		let moves = []
 
 		if(!searchingCheck) moves.push(...getCastleTargets(board, row, col, owner))
@@ -157,12 +161,13 @@ new PieceType({ // k
 		}
 
 		return moves
-	},
-	draw: (x, y, owner) => text(owner ? "k" : "K", x, y)
+	}
+  , draw: PieceType.AUTO
+  , loadRequiredImages: PieceType.AUTO
 })
 new PieceType({ // p
-	identifier: "p",
-	getTargets: (board, row, col, owner) => {
+	identifier: "p"
+  , getTargets: (board, row, col, owner) => {
 		const startRow = 6 - 5 * owner
 			, direction = owner ? 1 : -1
 			, nextRow = row + direction
@@ -225,6 +230,7 @@ new PieceType({ // p
 		}
 
 		return moves
-	},
-	draw: (x, y, owner) => text(owner ? "p" : "P", x, y)
+	}
+  , draw: PieceType.AUTO
+  , loadRequiredImages: PieceType.AUTO
 })
