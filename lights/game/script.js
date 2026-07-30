@@ -23,16 +23,18 @@ function windowResized() {
 	let side = min(windowWidth-16, windowHeight-16)
 	resizeCanvas(side, side)
 
+	const { width:gridWidth, height:gridHeight } = getGridDimensions()
+
 	let
 	  totalMarginWidth  = width  * CELL_MARGIN_PERCENT
 	, totalMarginHeight = height * CELL_MARGIN_PERCENT
 	, totalCellWidth  = width  - totalMarginWidth
 	, totalCellHeight = height - totalMarginHeight
 
-	CELL_MARGIN_WIDTH  = totalMarginWidth  / (GRID_WIDTH + 1)
-	CELL_MARGIN_HEIGHT = totalMarginHeight / (GRID_HEIGHT + 1)
-	CELL_WIDTH  = totalCellWidth  / GRID_WIDTH
-	CELL_HEIGHT = totalCellHeight / GRID_HEIGHT
+	CELL_MARGIN_WIDTH  = totalMarginWidth  / (gridWidth + 1)
+	CELL_MARGIN_HEIGHT = totalMarginHeight / (gridHeight + 1)
+	CELL_WIDTH  = totalCellWidth  / gridWidth
+	CELL_HEIGHT = totalCellHeight / gridHeight
 	CELL_SPACE_WIDTH  = CELL_MARGIN_WIDTH  + CELL_WIDTH
 	CELL_SPACE_HEIGHT = CELL_MARGIN_HEIGHT + CELL_HEIGHT
 
@@ -40,8 +42,9 @@ function windowResized() {
 }
 
 function triggerRandomFlips() {
-	for(let j = 0; j < GRID_HEIGHT; j++) {
-		for(let i = 0; i < GRID_WIDTH; i++) {
+	const { width, height } = getGridDimensions()
+	for(let j = 0; j < height; j++) {
+		for(let i = 0; i < width; i++) {
 			if(randomBool(0.5))
 				triggerFlips(lights, i, j)
 		}
@@ -49,9 +52,57 @@ function triggerRandomFlips() {
 }
 
 
+/** @type {{ width:int, height:int } | undefined} */
+let cachedDimensions
+
+function getGridDimensions() {
+	if(cachedDimensions)
+		return cachedDimensions
+
+	const params = new URL(document.URL).searchParams
+	    , widthFromParam = +params.get(WIDTH_URL_PARAM)
+	    , heightFromParam = +params.get(HEIGHT_URL_PARAM)
+
+	const {
+	    width:resultWidth
+	  , height:resultHeight
+	} = validateAndDefaultGridDimensions(widthFromParam, heightFromParam)
+	
+	cachedDimensions = {width: resultWidth, height: resultHeight}
+	return cachedDimensions
+}
+
+function validateAndDefaultGridDimensions(width, height) {
+	const widthIsValid = isValidIntLength(width)
+		, heightIsValid = isValidIntLength(height)
+
+	if(widthIsValid) {
+		if(heightIsValid)
+			return { width, height }
+		
+		console.warn(TextMissingURLParamDefaulted(HEIGHT_URL_PARAM, WIDTH_URL_PARAM))
+		return { width, height:width }
+	}
+	// width invalid
+
+	if(heightIsValid) {
+		console.warn(TextMissingURLParamDefaulted(WIDTH_URL_PARAM, HEIGHT_URL_PARAM))
+		return { width:height, height }
+	}
+	// both invalid
+
+	console.warn(TextMissingManyURLParamsDefaulted(
+	    [ WIDTH_URL_PARAM, HEIGHT_URL_PARAM ]
+	  , [ MISSING_DIMENSIONS_FALLBACK_WIDTH, MISSING_DIMENSIONS_FALLBACK_HEIGHT ]
+	))
+	return { width:MISSING_DIMENSIONS_FALLBACK_WIDTH, height:MISSING_DIMENSIONS_FALLBACK_HEIGHT }
+}
+
+
 function resetGridToRandom() {
 	hints = null
-	lights = createArray(GRID_WIDTH, GRID_HEIGHT, false)
+	const { width, height } = getGridDimensions()
+	lights = createArray(width, height, false)
 	triggerRandomFlips()
 }
 
@@ -59,8 +110,10 @@ function resetGridToRandom() {
 function draw() {
 	myBackground()
 
-	for(let j = 0; j < GRID_HEIGHT; j++) {
-		for(let i = 0; i < GRID_WIDTH; i++) {
+	const { width:gridWidth, height:gridHeight } = getGridDimensions()
+
+	for(let j = 0; j < gridHeight; j++) {
+		for(let i = 0; i < gridWidth; i++) {
 			let x = toLeftX(i)
 			  , y = toTopY(j)
 
@@ -82,7 +135,7 @@ function mousePressed() {
 	const i = toI(mouseX)
 	    , j = toJ(mouseY)
 
-	if(isInvalid(lights, i, j))
+	if(isLocationInvalid(lights, i, j))
 		return
 
 	triggerFlips(lights, i, j)
@@ -101,7 +154,7 @@ function triggerFlips(grid, i, j) {
 }
 
 function flipSingleSafe(grid, i, j) {
-	if(isInvalid(grid, i, j))
+	if(isLocationInvalid(grid, i, j))
 		return
 
 	flipSingleUnchecked(grid, i, j)
@@ -130,7 +183,7 @@ function calculateHints() {
 }
 
 
-function isInvalid(grid, i, j) {
+function isLocationInvalid(grid, i, j) {
 	return (
 		   i < 0
 		|| j < 0
@@ -176,4 +229,9 @@ function toIndices(flatIndex) {
 
 function randomBool(truePercent) {
 	return Math.random() < truePercent
+}
+
+
+function isValidIntLength(number) {
+	return number > 0 && Number.isInteger(number)
 }
