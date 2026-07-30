@@ -1,0 +1,12 @@
+body {
+	background-color: gray;
+}
+
+#flex-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#buttons button {
+	font-size: larger;
+}
