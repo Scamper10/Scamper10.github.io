@@ -1,0 +1,13 @@
+#size-select-buttons {
+	display: flex;
+	gap: 1.5vw
+}
+
+.size-select {
+	flex-basis: 0;
+	flex-grow: 1;
+	text-align: center;
+	
+	background-color: grey;
+	cursor: pointer;
+}
