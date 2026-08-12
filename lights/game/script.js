@@ -172,8 +172,9 @@ document.getElementById("randomize-button").addEventListener("click", resetGridT
 function calculateHints() {
 	hints = []
 	const solutionTriggers = getSolveTriggers(lights)
-	for(let j = 0; j < GRID_HEIGHT; j++) {
-		for(let i = 0; i < GRID_WIDTH; i++) {
+		, { width, height } = getGridDimensions()
+	for(let j = 0; j < height; j++) {
+		for(let i = 0; i < width; i++) {
 			if(!solutionTriggers[j][i])
 				continue
 
@@ -216,13 +217,15 @@ function toJ(y) {
 
 /** In reading order, from 0 */
 function toFlatIndex(i, j) {
-	return j*GRID_WIDTH + i
+	const { width } = getGridDimensions()
+	return j*width + i
 }
 /** @param flatIndex In reading order, from 0 */
 function toIndices(flatIndex) {
+	const { width } = getGridDimensions()
 	return {
-	    i: flatIndex % GRID_WIDTH
-	  , j: Math.floor(flatIndex / GRID_WIDTH)
+	    i: flatIndex % width
+	  , j: Math.floor(flatIndex / width)
 	}
 }
 
