@@ -169,10 +169,8 @@ const SOLVE_TOGGLE_BUTTON = document.getElementById("solve-toggle-button")
 SOLVE_TOGGLE_BUTTON.addEventListener("click", function(event) {
 	if(hintsAreActive()) {
 		deactivateHints()
-		this.innerText = TextActivateHints
 	} else {
-		calculateHints()
-		this.innerText = TextDeactivateHints
+		activateHints()
 	}
 })
 SOLVE_TOGGLE_BUTTON.innerText = TextActivateHints
@@ -186,6 +184,11 @@ function hintsAreActive() {
 }
 function deactivateHints() {
 	hints = null
+	SOLVE_TOGGLE_BUTTON.innerText = TextActivateHints
+}
+function activateHints() {
+	calculateHints()
+	SOLVE_TOGGLE_BUTTON.innerText = TextDeactivateHints
 }
 
 function calculateHints() {
