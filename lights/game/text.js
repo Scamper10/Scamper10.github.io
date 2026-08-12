@@ -9,3 +9,7 @@ function TextMissingURLParamDefaulted(missingParamKey, defaultValueParamKey) {
 function TextMissingManyURLParamsDefaulted(missingParamKeys, defaults) {
 	return `Could not get valid values for search params: [ ${missingParamKeys.join(", ")} ], using defaults [ ${defaults.join(", ")} ]`
 }
+
+const
+	  TextActivateHints = "Show Solution"
+	, TextDeactivateHints = "Hide Solution"
