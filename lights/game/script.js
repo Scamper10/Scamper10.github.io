@@ -38,7 +38,7 @@ function windowResized() {
 	CELL_SPACE_WIDTH  = CELL_MARGIN_WIDTH  + CELL_WIDTH
 	CELL_SPACE_HEIGHT = CELL_MARGIN_HEIGHT + CELL_HEIGHT
 
-	HINT_DIAMETER = CELL_WIDTH * HINT_DIAMETER_PERCENT
+	HINT_DIAMETER = Math.min(CELL_WIDTH, CELL_HEIGHT) * HINT_DIAMETER_PERCENT
 }
 
 function triggerRandomFlips() {
@@ -100,7 +100,7 @@ function validateAndDefaultGridDimensions(width, height) {
 
 
 function resetGridToRandom() {
-	hints = null
+	deactivateHints()
 	const { width, height } = getGridDimensions()
 	lights = createArray(width, height, false)
 	triggerRandomFlips()
@@ -122,7 +122,7 @@ function draw() {
 		}
 	}
 
-	if(hints === null)
+	if(!hintsAreActive())
 		return
 	for(const {i, j} of hints) {
 		fillHint()
@@ -140,7 +140,7 @@ function mousePressed() {
 
 	triggerFlips(lights, i, j)
 	
-	if(hints !== null) {
+	if(hintsAreActive()) {
 		calculateHints()
 	}
 }
@@ -165,9 +165,28 @@ function flipSingleUnchecked(grid, i, j) {
 }
 
 
-document.getElementById("solve-button").addEventListener("click", calculateHints)
+const SOLVE_TOGGLE_BUTTON = document.getElementById("solve-toggle-button")
+SOLVE_TOGGLE_BUTTON.addEventListener("click", function(event) {
+	if(hintsAreActive()) {
+		deactivateHints()
+		this.innerText = TextActivateHints
+	} else {
+		calculateHints()
+		this.innerText = TextDeactivateHints
+	}
+})
+SOLVE_TOGGLE_BUTTON.innerText = TextActivateHints
+
+
 document.getElementById("randomize-button").addEventListener("click", resetGridToRandom)
 
+
+function hintsAreActive() {
+	return hints !== null
+}
+function deactivateHints() {
+	hints = null
+}
 
 function calculateHints() {
 	hints = []
